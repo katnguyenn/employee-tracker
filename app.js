@@ -2,6 +2,8 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const consoleTable = require("console.table");
 const { connect } = require("http2");
+const { removeAllListeners } = require("process");
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 
 // Establishing Connection 
 const connection = mysql.createConnection({
@@ -13,7 +15,7 @@ const connection = mysql.createConnection({
 
 });
 
-connect.connect(function (err) {
+connection.connect(function (err) {
     if (err) {
         console.error('error connecting: ' + err.stack);
         return;
@@ -60,6 +62,10 @@ function startApp() {
             case "Add role":
                 addRole();
                 break;
+
+            case "Add employee":
+                addEmployee();
+                break;
         }
     })
 
@@ -67,6 +73,36 @@ function startApp() {
 
 }
 
+// User able to access role list for new employees
+const newRole = [];
+function roleList() {
+    connection.query("SELECT * FROM role", function(err, res) {
+        if(err) throw err;
+
+        for (let i = 0; i < res.length; i++) {
+            newRole.push(res[i].title);
+        }
+
+    })
+    return newRole;
+}
+
+// User able to identify new employee's manager
+const managerInfo = [];
+function managerList() {
+    connection.query("SELECT first_name, last_name AS manager_name FROM employee WHERE manager_id IS NOT NULL", function(err, res) {
+        if(err) throw err;
+
+        for (let i = 0; i < res.length; i++) {
+            managerInfo.push(res[i].manager_name);
+        }
+
+    })
+    return managerInfo;
+}
+
+
+// Add Department 
 function addDepartment() {
     inquirer.prompt([
         {
@@ -92,6 +128,7 @@ function addDepartment() {
 
 }
 
+// Add Role
 function addRole() {
     inquirer.prompt([
         {
@@ -122,5 +159,50 @@ function addRole() {
     })
 }
 
+// Add Employee
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: "What is the employee's first name?",
+            name: 'first'
+        },
+        {
+            type: 'input',
+            message: "What is the employee's last name?",
+            name: 'last'
+
+        },
+        {
+            type: 'list',
+            message: "What is the employee's role?",
+            choice: roleList(),
+            name: 'role'
+
+        },
+        {
+            type: 'list',
+            message: "what is their manager's name?",
+            choice: managerList(),
+            name: 'manager'
+        }
+    ]).then(function (res) {
+        connection.query('INSERT INTO employee',
+            {
+                first: res.first,
+                last: res.last,
+                role: res.role,
+                manager: res.manager
+            },
+
+            function (err) {
+                if (err) throw err;
+                console.table(res);
+                startApp();
+
+            }
+        )
+    })
+}
 
 
