@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const mysql = require("MySQL");
+const mysql = require("mysql");
 const consoleTable = require("console.table");
 const { connect } = require("http2");
 
@@ -52,12 +52,15 @@ function startApp() {
         }
 
     ]).then(function (answer) {
-        switch(answer.choices) {
-            case "Add Department":
+        switch (answer.choices) {
+            case "Add department":
                 addDepartment();
                 break;
+        
+            case "Add role":
+                addRole();
+                break;
         }
-
     })
 
 
@@ -71,19 +74,53 @@ function addDepartment() {
             message: 'What department do you want to add?',
             name: 'name'
         }
-    ]).then(function(res) {
-        connection.query('INSERT INTO department', 
-        {
-            name: res.name
-        },
+    ]).then(function (res) {
+        connection.query('INSERT INTO department',
+            {
+                name: res.name
+            },
 
-        function (err) {
-            if (err) throw err;
-            console.table(res);
-            startApp();
+            function (err) {
+                if (err) throw err;
+                console.table(res);
+                startApp();
+            }
+        )
 
-        })
+
     })
-    
 
 }
+
+function addRole() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What role do you want to add?',
+            name: 'title'
+        },
+        {
+            type: 'input',
+            message: "What is this role's salary?",
+            name: 'salary'
+
+        }
+    ]).then(function (res) {
+        connection.query('INSERT INTO role',
+            {
+                title: res.title,
+                salary: res.salary
+            },
+
+            function (err) {
+                if (err) throw err;
+                console.table(res);
+                startApp();
+
+            }
+        )
+    })
+}
+
+
+
