@@ -75,6 +75,10 @@ function startApp() {
                 viewRole();
                 break;
 
+            case "View Employee":
+                viewEmployee();
+                break;
+
         }
     })
 
@@ -216,7 +220,7 @@ function addEmployee() {
 
 // View Department 
 function viewDepartment() {
-    connection.query("SELECT * FROM department INNER JOIN role ON department.id = role.id", 
+    connection.query("SELECT department.name, role.title AS Title FROM department INNER JOIN role ON department.id = role.id", 
     function(err, res) {
         if (err) throw err;
 
@@ -227,7 +231,18 @@ function viewDepartment() {
 
 // View Role
 function viewRole() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title AS title FROM employee INNER JOIN role ON role.id = employee.role_id", 
+    connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee INNER JOIN role ON role.id = employee.role_id", 
+    function(err, res) {
+        if (err) throw err;
+
+        console.table(res);
+        startApp();
+    })
+}
+
+// View Employee
+function viewEmployee() {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title, role.salary AS Salary, department.id AS Department, employee.manager_id AS Manager FROM employee INNER JOIN role ON role.id = employee.role_id INNER JOIN department ON department.id = role.department_id", 
     function(err, res) {
         if (err) throw err;
 
