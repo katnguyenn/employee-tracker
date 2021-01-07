@@ -66,6 +66,11 @@ function startApp() {
             case "Add employee":
                 addEmployee();
                 break;
+
+            case "View department": 
+                viewDepartment();
+                break;
+
         }
     })
 
@@ -202,6 +207,16 @@ function addEmployee() {
 
             }
         )
+    })
+}
+
+// View Department 
+function viewDepartment() {
+    connection.query("SELECT * FROM department INNER JOIN role ON department.id = role.id", function(err, res) {
+        if (err) throw err;
+
+        console.table(res);
+        startApp();
     })
 }
 
