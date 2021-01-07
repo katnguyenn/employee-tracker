@@ -13,8 +13,8 @@ const connection = mysql.createConnection({
 
 });
 
-connect.connect(function(err) {
-    if(err) {
+connect.connect(function (err) {
+    if (err) {
         console.error('error connecting: ' + err.stack);
         return;
     }
@@ -27,32 +27,63 @@ connect.connect(function(err) {
 
 // Initial Prompt 
 function startApp() {
-    inquirer.prompt({
+    inquirer.prompt([
 
+        {
+            type: 'list',
+            message: 'What would you like to do?',
+            choices: [
+                "Add department",
+                "Add role",
+                "Add employee",
+                "View department",
+                "View role",
+                "View employee",
+                "Update employee role",
+                "Update employee manager",
+                "View employees by manager",
+                "Delete department",
+                "Delete role",
+                "Delete employee",
+                "View total budget of department"
 
-        type: 'list',
-        message: 'What would you like to do?',
-        choices: [
-            "Add department",
-            "Add role",
-            "Add employee",
-            "View department",
-            "View role",
-            "View employee",
-            "Update employee role",
-            "Update employee manager",
-            "View employees by manager",
-            "Delete department",
-            "Delete role",
-            "Delete employee",
-            "View total budget of department"
+            ],
+            name: 'Question',
+        }
 
-        ],
-        name: 'Question',
-    }).then(function (answer) {
+    ]).then(function (answer) {
+        switch(answer.choices) {
+            case "Add Department":
+                addDepartment();
+                break;
+        }
 
     })
 
 
+
+}
+
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: 'What department do you want to add?',
+            name: 'name'
+        }
+    ]).then(function(res) {
+        connection.query('INSERT INTO department', 
+        {
+            name: res.name
+        },
+
+        function (err) {
+            if (err) throw err;
+            console.table(res);
+            startApp();
+
+        })
+    })
+    
 
 }
