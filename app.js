@@ -259,3 +259,57 @@ function viewEmployee() {
 
 
 
+function updateEmployeeRole() {
+    connection.query(`SELECT employee.id employeeID, role.id roleID, employee.first_name, employee.last_name, role.title, 
+    concat(manager.first_name, " ", manager.last_name) manager FROM employee 
+    LEFT JOIN role on role.id = employee.role_id
+    LEFT JOIN employee manager ON manager.id = employee.manager_id
+    WHERE employee.manager_id IS NOT NULL`,
+        (err, employeeDB) => {
+            let updateEmployee = employeeDB.map(employee => employee.first_name + " " + employee.last_name);
+            let updateEmployeeRole = employeeDB.map(role => role.title);
+
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    message: 'Select an employee to update their role',
+                    choices: updateEmployee,
+                    name: 'employee'
+                },
+                {
+                    type: 'list',
+                    message: 'Choose new role',
+                    choices: updateEmployeeRole,
+                    name: 'role'
+                }
+
+            ]).then(function (answer) {
+                const employeeRoleObject = employeeDB.find(role => role.title === answer.role);
+                const employeeObj = employeeDB.find(employee => employee.first_name + " " + employee.last_name === answer.employee);
+                const query = 'UPDATE employee SET ? WHERE ?';
+
+                connection.query(query,
+                    [{
+
+                        role_id: employeeRoleObject.roleID
+
+                    },
+                    {
+                        id: employeeObj.employeeID
+                    }],
+
+                    (err, res) => {
+                        if (err) throw err;
+                    });
+
+                console.log(answer.employee + "'s role has been updated.");
+                startApp();
+
+
+            })
+
+
+
+        })
+}
