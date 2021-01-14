@@ -2,7 +2,17 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const consoleTable = require("console.table");
 const { printTable } = require("console-table-printer");
+const figlet = require('figlet');
 
+
+figlet('Employee Tracker', function (err, data) {
+    if (err) {
+        console.log('Something went wrong...');
+        console.dir(err);
+        return;
+    }
+    console.log(data)
+});
 
 // Establishing Connection 
 const connection = mysql.createConnection({
