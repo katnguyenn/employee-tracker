@@ -159,3 +159,62 @@ function addRole() {
 
 }
 
+// Add Employee
+function addEmployee() {
+    connection.query(`SELECT employee.id employeeID, role.id roleID, employee.first_name, employee.last_name, role.title, 
+    concat(manager.first_name, " ", manager.last_name) manager FROM employee 
+    LEFT JOIN role on role.id = employee.role_id
+    LEFT JOIN employee manager ON manager.id = employee.manager_id
+    WHERE employee.manager_id IS NOT NULL`,
+        (err, employeeDB) => {
+            let newEmployee = employeeDB.map(role => role.title);
+            let employeeManager = employeeDB.map(employee => employee.manager);
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    message: "What is the employee's first name?",
+                    name: 'first'
+                },
+                {
+                    type: 'input',
+                    message: "What is the employee's last name?",
+                    name: 'last'
+
+                },
+                {
+                    type: 'list',
+                    message: "What is the employee's role?",
+                    choices: newEmployee,
+                    name: 'role'
+
+                },
+                {
+                    type: 'list',
+                    message: "What is their manager's name?",
+                    choices: employeeManager,
+                    name: 'manager'
+                }
+            ]).then(function (answer) {
+                const employeeObject = employeeDB.find(role => role.title === answer.role);
+                const employeeManagerObj = employeeDB.find(employee => employee.manager === answer.manager);
+                const query = 'INSERT INTO employee SET ?';
+
+                connection.query(query,
+                    {
+                        first_name: answer.first,
+                        last_name: answer.last,
+                        role_id: employeeObject.roleID,
+                        manager_id: employeeManagerObj.employeeID
+                    },
+
+                    (err, res) => {
+                        if (err) throw err;
+                        console.log(answer.first + " " + answer.last + " has been added");
+                        startApp();
+
+                    }
+                )
+            });
+        });
+}
+
