@@ -230,3 +230,15 @@ function viewDepartment() {
     });
 
 }
+
+// View Role
+function viewRole() {
+    const query = "SELECT * FROM role";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+
+        printTable(res);
+        startApp();
+    });
+}
+
