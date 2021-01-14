@@ -218,3 +218,15 @@ function addEmployee() {
         });
 }
 
+// View Department 
+function viewDepartment() {
+    const query = `SELECT role.id, role.title, role.salary, department.name
+    FROM role LEFT JOIN department ON role.department_id = department.id`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+
+        printTable(res);
+        startApp();
+    });
+
+}
