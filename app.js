@@ -174,11 +174,10 @@ function addEmployee() {
     concat(manager.first_name, " ", manager.last_name) manager FROM employee 
     LEFT JOIN role on role.id = employee.role_id
     LEFT JOIN employee manager ON manager.id = employee.manager_id
-    WHERE employee.manager_id IS NOT NULL`,
+    `,
         (err, employeeDB) => {
             let newEmployee = employeeDB.map(role => role.title);
-            console.log(newEmployee);
-            let employeeManager = employeeDB.map(employee => employee.manager);
+            let employeeManager = employeeDB.map(employee => employee.first_name + " " + employee.last_name);
             inquirer.prompt([
                 {
                     type: 'input',
@@ -206,7 +205,7 @@ function addEmployee() {
                 }
             ]).then(function (answer) {
                 const employeeObject = employeeDB.find(role => role.title === answer.role);
-                const employeeManagerObj = employeeDB.find(employee => employee.manager === answer.manager);
+                const employeeManagerObj = employeeDB.find(employee => employee.first_name + " " + employee.last_name === answer.manager);
                 const query = 'INSERT INTO employee SET ?';
 
                 connection.query(query,
