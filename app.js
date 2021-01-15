@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const consoleTable = require("console.table");
 const { printTable } = require("console-table-printer");
 const figlet = require('figlet');
 
@@ -178,6 +177,7 @@ function addEmployee() {
     WHERE employee.manager_id IS NOT NULL`,
         (err, employeeDB) => {
             let newEmployee = employeeDB.map(role => role.title);
+            console.log(newEmployee);
             let employeeManager = employeeDB.map(employee => employee.manager);
             inquirer.prompt([
                 {
@@ -270,11 +270,10 @@ function viewEmployee() {
 
 
 function updateEmployeeRole() {
-    connection.query(`SELECT employee.id employeeID, role.id roleID, employee.first_name, employee.last_name, role.title, 
-    concat(manager.first_name, " ", manager.last_name) manager FROM employee 
-    LEFT JOIN role on role.id = employee.role_id
-    LEFT JOIN employee manager ON manager.id = employee.manager_id
-    WHERE employee.manager_id IS NOT NULL`,
+    connection.query(`SELECT employee.id employeeID, role.id roleID, 
+    employee.first_name, employee.last_name, role.title
+    FROM employee
+    LEFT JOIN role on role.id = employee.role_id`,
         (err, employeeDB) => {
             let updateEmployee = employeeDB.map(employee => employee.first_name + " " + employee.last_name);
             let updateEmployeeRole = employeeDB.map(role => role.title);
