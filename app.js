@@ -293,8 +293,9 @@ function updateEmployeeRole() {
                 }
 
             ]).then(function (answer) {
-                const employeeRoleObject = employeeDB.find(role => role.title === answer.role);
                 const employeeObj = employeeDB.find(employee => employee.first_name + " " + employee.last_name === answer.employee);
+                const employeeRoleObject = employeeDB.find(role => role.title === answer.role);
+                
                 const query = 'UPDATE employee SET ? WHERE ?';
 
                 connection.query(query,
