@@ -30,3 +30,6 @@ The command-line application allows users to:
 ## Roadmap
 
 Instead of displaying all employee's name to look for the manager, I would identify who doesn't have a manager's id in the employee table and then filter through the department to provide a more comprehensive list. That way in a larger data set, users would be presented with a list of managers in each department. 
+
+## Link
+[LinkedIn](https://www.linkedin.com/in/katherine-nguyen-205a7b13a/)
